@@ -47,12 +47,14 @@ function Game:update(dt)
 	end
 end
 
+function Game:drawEntities()
+	for _, entity in ipairs(self.entities) do
+		if entity.draw then entity:draw() end
+	end
+end
+
 function Game:draw()
-	self.glowShader.draw(function()
-		for _, entity in ipairs(self.entities) do
-			if entity.draw then entity:draw() end
-		end
-	end)
+	self.glowShader.draw(self.drawEntities, self)
 end
 
 function Game:beginContact(a, b, coll)
