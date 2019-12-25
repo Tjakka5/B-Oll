@@ -1,5 +1,8 @@
-local Arena = require 'class.game.arena'
 local Object = require 'lib.classic'
+local flux = require 'lib.flux'
+local tick = require 'lib.tick'
+
+local Arena = require 'class.game.arena'
 local Player = require 'class.game.player'
 
 local Game = Object:extend()
@@ -13,6 +16,9 @@ function Game:enter()
 end
 
 function Game:update(dt)
+	flux.update(dt)
+	tick.update(dt)
+
 	self.world:update(dt)
 	for _, entity in ipairs(self.entities) do
 		if entity.update then entity:update(dt) end

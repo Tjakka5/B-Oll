@@ -1,8 +1,13 @@
 local input = require 'input'
 local Object = require 'lib.classic'
 local util = require 'util'
+local flux = require 'lib.flux'
+local tick = require 'lib.tick'
 
 local Player = Object:extend()
+
+Player.dashing = false
+Player.dashTimer = nil
 
 Player.radius = 16
 Player.restitution = 2
@@ -11,6 +16,9 @@ Player.linearDamping = 5
 
 Player.numberOfTrailPoints = 10
 Player.trailLerpSpeed = 20
+
+Player.dashPower = 1700
+Player.dashTime = 0.1
 
 function Player:initializeBody(world, x, y)
 	self.body = love.physics.newBody(world, x, y, 'dynamic')
@@ -48,10 +56,50 @@ function Player:updateTrail(dt)
 	self.trailPoints[1].x, self.trailPoints[1].y = self.body:getPosition()
 end
 
+function Player:tryDash(targetX, targetY)
+	-- TODO: Check if player can dash
+	self:dash(targetX, targetY)
+end
+
+function Player:dash(targetX, targetY)
+	if self.dashTimer then
+		self.dashTimer:stop()
+		self.dashTimer = nil
+	end
+
+	local deltaX, deltaY = targetX - self.body:getX(), targetY - self.body:getY()
+	deltaX, deltaY = util.trim(deltaX, deltaY, self.dashPower)
+
+	self.dashing = true
+
+	self.body:setLinearVelocity(0, 0)
+
+	self.body:setLinearDamping(0)
+	self.body:applyLinearImpulse(deltaX, deltaY)
+
+	self.dashTimer = tick.delay(function()
+		self:endDash()
+		self.dashTimer = nil
+	end, self.dashTime)
+end
+
+function Player:endDash()
+	self.dashing = false
+
+	self.body:setLinearVelocity(0, 0)
+
+	self.body:setLinearDamping(self.linearDamping)
+end
+
 function Player:update(dt)
 	local inputX, inputY = input:get 'move'
 	self.body:applyForce(inputX * self.movementSpeed, inputY * self.movementSpeed)
 	self:updateTrail(dt)
+
+	if input:pressed('dash') then
+		local targetX, targetY = love.mouse.getPosition()
+		self:tryDash(targetX, targetY)
+	end
 end
 
 function Player:drawTrail()

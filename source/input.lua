@@ -6,6 +6,7 @@ return baton.new {
 		right = {'sc:right', 'sc:d', 'axis:leftx+', 'button:dpright'},
 		up = {'sc:up', 'sc:w', 'axis:lefty-', 'button:dpup'},
 		down = {'sc:down', 'sc:s', 'axis:lefty+', 'button:dpdown'},
+		dash = {'mouse:1'},
 	},
 	pairs = {
 		move = {'left', 'right', 'up', 'down'}
