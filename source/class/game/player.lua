@@ -11,7 +11,7 @@ local Player = Object:extend()
 Player.dashing = false
 Player.dashTimer = nil
 
-Player.radius = 16
+Player.radius = 24
 Player.restitution = 1
 Player.movementSpeed = 7000
 Player.linearDamping = 15
@@ -27,9 +27,15 @@ function Player:initializeBody(world, x, y)
 	self.body = love.physics.newBody(world, x, y, 'dynamic')
 	self.body:setBullet(true)
 	self.body:setLinearDamping(self.linearDamping)
+	self.body:setFixedRotation(true)
 	self.fixture = love.physics.newFixture(
 		self.body,
-		love.physics.newCircleShape(self.radius)
+		love.physics.newPolygonShape(
+			self.radius, 0,
+			-self.radius/2, -self.radius,
+			-self.radius, 0,
+			-self.radius/2, self.radius
+		)
 	)
 	self.fixture:setUserData(self)
 	self.fixture:setRestitution(self.restitution)
@@ -115,6 +121,13 @@ function Player:update(dt)
 	end
 
 	self.body:applyForce(inputX * movementSpeed, inputY * movementSpeed)
+	if util.length2(self.body:getLinearVelocity()) > 0 then
+		self.body:setAngle(util.lerpAngle(
+			self.body:getAngle(),
+			util.angle(self.body:getLinearVelocity()) + math.pi,
+			10 * dt
+		))
+	end
 	self:updateTrail(dt)
 
 	if input:pressed('dash') then
@@ -132,7 +145,7 @@ function Player:drawTrail()
 		trailShader:send("player_coords", {self.body:getX(), self.body:getY()})
 	end
 
-	local radius = self.fixture:getShape():getRadius()
+	local radius = self.radius
 	for i, point in ipairs(self.trailPoints) do
 		local next = self.trailPoints[i + 1]
 		-- draw circles for each trail point
@@ -159,8 +172,9 @@ function Player:draw()
 	love.graphics.push 'all'
 	self:drawTrail()
 	love.graphics.setColor(153/255, 203/255, 219/255)
-	love.graphics.circle('fill', self.body:getX(), self.body:getY(),
-		self.fixture:getShape():getRadius() * .75)
+	love.graphics.translate(self.body:getPosition())
+	love.graphics.rotate(self.body:getAngle())
+	love.graphics.polygon('fill', self.fixture:getShape():getPoints())
 	love.graphics.pop()
 end
 
