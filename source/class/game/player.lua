@@ -1,8 +1,7 @@
 local input = require 'input'
-local Object = require 'lib.classic'
 local util = require 'util'
 
-local Player = Object:extend()
+local Player = util.class()
 
 Player.radius = 16
 Player.restitution = 2

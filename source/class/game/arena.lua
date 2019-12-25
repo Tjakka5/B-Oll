@@ -1,6 +1,6 @@
-local Object = require 'lib.classic'
+local util = require 'util'
 
-local Arena = Object:extend()
+local Arena = util.class()
 
 function Arena:new(world)
 	self.body = love.physics.newBody(world)

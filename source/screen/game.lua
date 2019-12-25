@@ -1,8 +1,8 @@
 local Arena = require 'class.game.arena'
-local Object = require 'lib.classic'
 local Player = require 'class.game.player'
+local util = require 'util'
 
-local Game = Object:extend()
+local Game = util.class()
 
 function Game:enter()
 	self.world = love.physics.newWorld(0, 0, false)
