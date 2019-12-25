@@ -1,9 +1,28 @@
+local Arena = require 'class.game.arena'
 local Object = require 'lib.classic'
+local Player = require 'class.game.player'
 
-local game = Object:extend()
+local Game = Object:extend()
 
-function game:draw()
-	love.graphics.print 'hi!'
+function Game:enter()
+	self.world = love.physics.newWorld(0, 0, false)
+	self.entities = {
+		Arena(self.world),
+		Player(self.world, 150, 300),
+	}
 end
 
-return game
+function Game:update(dt)
+	self.world:update(dt)
+	for _, entity in ipairs(self.entities) do
+		if entity.update then entity:update(dt) end
+	end
+end
+
+function Game:draw()
+	for _, entity in ipairs(self.entities) do
+		if entity.draw then entity:draw() end
+	end
+end
+
+return Game
