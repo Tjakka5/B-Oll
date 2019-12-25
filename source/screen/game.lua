@@ -1,6 +1,6 @@
 local Object = require 'lib.classic'
 local flux = require 'lib.flux'
-local tick = require 'lib.tick'
+local timer = require 'lib.timer'
 
 local Arena = require 'class.game.arena'
 local Player = require 'class.game.player'
@@ -17,7 +17,7 @@ end
 
 function Game:update(dt)
 	flux.update(dt)
-	tick.update(dt)
+	timer.update(dt)
 
 	self.world:update(dt)
 	for _, entity in ipairs(self.entities) do

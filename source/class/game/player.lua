@@ -1,8 +1,10 @@
 local input = require 'input'
 local Object = require 'lib.classic'
 local util = require 'util'
+local timer = require 'lib.timer'
 local flux = require 'lib.flux'
-local tick = require 'lib.tick'
+
+local trailShader = love.graphics.newShader("shaders/trail.glsl")
 
 local Player = Object:extend()
 
@@ -11,14 +13,15 @@ Player.dashTimer = nil
 
 Player.radius = 16
 Player.restitution = 2
-Player.movementSpeed = 1500
-Player.linearDamping = 5
+Player.movementSpeed = 10000
+Player.linearDamping = 25
 
-Player.numberOfTrailPoints = 10
-Player.trailLerpSpeed = 20
+Player.numberOfTrailPoints = 20
+Player.trailLerpSpeed = 60
 
-Player.dashPower = 1700
-Player.dashTime = 0.1
+Player.dashPower = 3000
+Player.dashTime = 0.2
+Player.dashControlMultipler = 0.2
 
 function Player:initializeBody(world, x, y)
 	self.body = love.physics.newBody(world, x, y, 'dynamic')
@@ -63,7 +66,7 @@ end
 
 function Player:dash(targetX, targetY)
 	if self.dashTimer then
-		self.dashTimer:stop()
+		timer.cancel(self.dashTimer)
 		self.dashTimer = nil
 	end
 
@@ -77,23 +80,33 @@ function Player:dash(targetX, targetY)
 	self.body:setLinearDamping(0)
 	self.body:applyLinearImpulse(deltaX, deltaY)
 
-	self.dashTimer = tick.delay(function()
+	self.dashTimer = timer.during(self.dashTime, function(dt, timeLeft)
+		local progress = 1 - timeLeft / self.dashTime
+		local linearDamping = flux.easing["quartout"](progress) * self.linearDamping
+
+		self.body:setLinearDamping(linearDamping)
+	end, function()
 		self:endDash()
 		self.dashTimer = nil
-	end, self.dashTime)
+	end)
 end
 
 function Player:endDash()
 	self.dashing = false
 
-	self.body:setLinearVelocity(0, 0)
 
 	self.body:setLinearDamping(self.linearDamping)
 end
 
 function Player:update(dt)
 	local inputX, inputY = input:get 'move'
-	self.body:applyForce(inputX * self.movementSpeed, inputY * self.movementSpeed)
+
+	local movementSpeed = self.movementSpeed
+	if self.dashing then
+		movementSpeed = movementSpeed * self.dashControlMultipler
+	end
+
+	self.body:applyForce(inputX * movementSpeed, inputY * movementSpeed)
 	self:updateTrail(dt)
 
 	if input:pressed('dash') then
@@ -103,6 +116,14 @@ function Player:update(dt)
 end
 
 function Player:drawTrail()
+	love.graphics.push 'all'
+
+	love.graphics.setShader(trailShader)
+
+	if trailShader:hasUniform("player_coords") then
+		trailShader:send("player_coords", {self.body:getX(), self.body:getY()})
+	end
+
 	local radius = self.fixture:getShape():getRadius()
 	for i, point in ipairs(self.trailPoints) do
 		local next = self.trailPoints[i + 1]
@@ -122,6 +143,8 @@ function Player:drawTrail()
 			love.graphics.polygon('fill', x1, y1, x2, y2, x3, y3, x4, y4)
 		end
 	end
+
+	love.graphics.pop()
 end
 
 function Player:draw()
