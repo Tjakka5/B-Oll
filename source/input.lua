@@ -11,4 +11,5 @@ return baton.new {
 		move = {'left', 'right', 'up', 'down'}
 	},
 	joystick = love.joystick.getJoysticks()[1],
+	deadzone = 1/5,
 }
