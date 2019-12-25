@@ -8,6 +8,7 @@ function Arena:new(world)
 		self.body,
 		love.physics.newChainShape(true, 50, 50, 750, 50, 750, 550, 50, 550)
 	)
+	self.fixture:setUserData(self)
 end
 
 function Arena:draw()

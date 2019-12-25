@@ -25,4 +25,8 @@ function util.lerp(a, b, amount)
 	return a + (b - a) * amount
 end
 
+function util.bind(o, fnName)
+	return function(...) return o[fnName](o, ...) end
+end
+
 return util
