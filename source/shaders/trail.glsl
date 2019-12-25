@@ -1,8 +1,8 @@
-uniform vec2 player_coords;
+uniform vec2 origin;
 
 vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
 {
-    float dist = distance(player_coords, screen_coords);
+    float dist = distance(origin, screen_coords);
 
     float alpha = 0.1f;
     if (mod(dist, 4.0f) > 2.0f) {
