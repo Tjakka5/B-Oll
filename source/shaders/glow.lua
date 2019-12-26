@@ -3,14 +3,14 @@ local Object = require 'lib.classic'
 
 local Glow = Object:extend()
 
-Glow.defaultIterations = 8
-Glow.defaultStrength = 2
-Glow.defaultSpread = 4
+Glow.defaultIterations = 16
+Glow.defaultStrength = 4
+Glow.defaultSpread = 8
 
 function Glow:initializeCanvases()
-	self.unblurredCanvas = love.graphics.newCanvas(constant.screenWidth, constant.screenHeight)
-	self.horizontalBlurCanvas = love.graphics.newCanvas(constant.screenWidth, constant.screenHeight)
-	self.bothBlurCanvas = love.graphics.newCanvas(constant.screenWidth, constant.screenHeight)
+	self.unblurredCanvas = love.graphics.newCanvas()
+	self.horizontalBlurCanvas = love.graphics.newCanvas()
+	self.bothBlurCanvas = love.graphics.newCanvas()
 end
 
 function Glow:initializeShaders(spread)

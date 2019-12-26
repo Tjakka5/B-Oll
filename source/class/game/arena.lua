@@ -19,7 +19,7 @@ end
 
 function Arena:draw()
 	love.graphics.push 'all'
-	love.graphics.setLineWidth(8)
+	love.graphics.setLineWidth(16)
 	love.graphics.line(self.fixture:getShape():getPoints())
 	love.graphics.pop()
 end

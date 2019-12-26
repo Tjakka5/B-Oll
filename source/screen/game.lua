@@ -40,15 +40,16 @@ function Game:update(dt)
 	end
 end
 
-function Game:render()
+function Game:draw()
 	self.glow:beginRender()
+	love.graphics.push 'all'
+	love.graphics.scale(math.min(love.graphics.getWidth() / constant.screenWidth,
+		love.graphics.getHeight() / constant.screenHeight))
 	for _, entity in ipairs(self.entities) do
 		if entity.draw then entity:draw() end
 	end
+	love.graphics.pop()
 	self.glow:endRender()
-end
-
-function Game:draw()
 	self.glow:draw()
 end
 
