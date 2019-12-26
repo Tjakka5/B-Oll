@@ -24,10 +24,10 @@ function Game:enter()
 	)
 
 	self.entities = {}
-	table.insert(self.entities, Grid(self.entities))
 	table.insert(self.entities, Arena(self.world))
 	table.insert(self.entities, Player(self.world, 300, constant.screenHeight / 2))
 	table.insert(self.entities, Ball(self.world, constant.screenWidth / 2, constant.screenHeight / 2))
+	table.insert(self.entities, Grid(self.entities))
 
 	self.glow = Glow()
 end

@@ -50,12 +50,9 @@ function Grid:update(dt)
 	end
 end
 
-function Grid:draw()
-	love.graphics.push 'all'
-	love.graphics.setColor(1, 1, 1, 1/3)
+function Grid:drawGrid()
 	for column = 0, self.columns do
 		for row = 0, self.rows do
-			love.graphics.circle('fill', self.points[column][row].x, self.points[column][row].y, 8)
 			if column < self.columns then
 				love.graphics.line(
 					self.points[column][row].x, self.points[column][row].y,
@@ -70,6 +67,16 @@ function Grid:draw()
 			end
 		end
 	end
+end
+
+function Grid:draw()
+	love.graphics.push 'all'
+	love.graphics.setColor(1, 1, 1)
+	love.graphics.setBlendMode 'add'
+	self:drawGrid()
+	love.graphics.setColor(.25, .25, 1, 1/8)
+	love.graphics.setBlendMode 'alpha'
+	self:drawGrid()
 	love.graphics.pop()
 end
 
