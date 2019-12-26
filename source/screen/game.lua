@@ -14,6 +14,7 @@ local util = require 'util'
 local Game = Object:extend()
 
 function Game:enter()
+	love.physics.setMeter(240)
 	self.world = love.physics.newWorld(0, 0, false)
 	self.world:setCallbacks(
 		util.bind(self, "beginContact"),

@@ -30,7 +30,6 @@ function Player:new(world, x, y)
 	)
 	self.fixture:setUserData(self)
 	self.fixture:setRestitution(self.restitution)
-	self.body:setMass(1/3)
 	self.trail = Trail(x, y)
 end
 
