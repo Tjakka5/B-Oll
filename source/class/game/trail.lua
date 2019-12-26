@@ -32,9 +32,8 @@ end
 function Trail:draw(radius)
 	love.graphics.push 'all'
 	love.graphics.setShader(trailShader)
-	if trailShader:hasUniform('origin') then
-		trailShader:send('origin', {self.trailPoints[1].x, self.trailPoints[1].y})
-	end
+	trailShader:send('originX', self.trailPoints[1].x)
+	trailShader:send('originY', self.trailPoints[1].y)
 	for i, point in ipairs(self.trailPoints) do
 		local next = self.trailPoints[i + 1]
 		-- draw circles for each trail point

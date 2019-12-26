@@ -2,7 +2,6 @@ local flux = require 'lib.flux'
 local input = require 'input'
 local mouseManager = require 'mouse-manager'
 local Object = require 'lib.classic'
-local timer = require 'lib.timer'
 local Trail = require 'class.game.trail'
 local util = require 'util'
 
@@ -39,55 +38,39 @@ function Player:tryDash(targetX, targetY)
 end
 
 function Player:dash(targetX, targetY)
-	if self.dashing then
-		self:endDash()
-	end
-
 	local deltaX, deltaY = targetX - self.body:getX(), targetY - self.body:getY()
 	deltaX, deltaY = util.trim(deltaX, deltaY, self.dashPower)
-
-	self.dashing = true
-
 	self.body:setLinearVelocity(0, 0)
-
 	self.body:setLinearDamping(0)
 	self.body:applyLinearImpulse(deltaX, deltaY)
-
-	self.dashTimer = timer.during(self.dashTime, function(dt, timeLeft)
-		local progress = 1 - timeLeft / self.dashTime
-
-		local linearDamping = flux.easing["quadout"](progress) * self.linearDamping
-
-		self.body:setLinearDamping(linearDamping)
-	end, function()
-		self:endDash()
-	end)
-end
-
-function Player:endDash()
-	if self.dashTimer then
-		timer.cancel(self.dashTimer)
-		self.dashTimer = nil
-	end
-
-	self.dashing = false
-
-	self.body:setLinearDamping(self.linearDamping)
+	self.dashTimer = self.dashTime
 end
 
 function Player:update(dt)
-	local inputX, inputY = input:get 'move'
-
 	local movementSpeed = self.movementSpeed
-	if self.dashing then
-		local progress = self.dashTimer.time / self.dashTime
-		local dashControlMultipler = flux.easing["quadout"](progress)
 
-		movementSpeed = movementSpeed * dashControlMultipler
+	-- update dash timer
+	if self.dashTimer then
+		self.dashTimer = self.dashTimer - dt
+		if self.dashTimer <= 0 then
+			-- end the dash and reset movement parameters
+			self.dashTimer = false
+			self.body:setLinearDamping(self.linearDamping)
+		else
+			-- while dashing, set some movement parameters
+			local progress = 1 - self.dashTimer / self.dashTime
+			local linearDamping = flux.easing.quadout(progress) * self.linearDamping
+			self.body:setLinearDamping(linearDamping)
+			local dashControlMultipler = flux.easing.quadout(progress)
+			movementSpeed = movementSpeed * dashControlMultipler
+		end
 	end
 
+	-- movement
+	local inputX, inputY = input:get 'move'
 	self.body:applyForce(inputX * movementSpeed, inputY * movementSpeed)
 
+	-- start dashes
 	if input:pressed('dash') then
 		local targetX, targetY = mouseManager:getMousePosition()
 		self:tryDash(targetX, targetY)
