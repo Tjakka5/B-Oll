@@ -1,7 +1,7 @@
 local Object = require 'lib.classic'
 local flux = require 'lib.flux'
+local Glow = require 'shaders.glow'
 local timer = require 'lib.timer'
-local moonshine = require 'lib.moonshine'
 
 local Arena = require 'class.game.arena'
 local Player = require 'class.game.player'
@@ -10,14 +10,6 @@ local Ball = require 'class.game.ball'
 local util = require 'util'
 
 local Game = Object:extend()
-
-Game.glowShader = moonshine(moonshine.effects.glow)
-Game.glowShader.parameters = {
-	glow = {
-		min_luma = 0,
-		strength = 5,
-	}
-}
 
 function Game:enter()
 	self.world = love.physics.newWorld(0, 0, false)
@@ -34,7 +26,7 @@ function Game:enter()
 		Ball(self.world, 350, 300),
 	}
 
-	self.canvas = love.graphics.newCanvas(love.graphics.getDimensions())
+	self.glow = Glow()
 end
 
 function Game:update(dt)
@@ -47,14 +39,12 @@ function Game:update(dt)
 	end
 end
 
-function Game:drawEntities()
+function Game:draw()
+	self.glow:beginDraw()
 	for _, entity in ipairs(self.entities) do
 		if entity.draw then entity:draw() end
 	end
-end
-
-function Game:draw()
-	self.glowShader.draw(self.drawEntities, self)
+	self.glow:endDraw()
 end
 
 function Game:beginContact(a, b, coll)
