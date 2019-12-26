@@ -3,7 +3,7 @@ local Trail = require 'class.game.trail'
 
 local Ball = Object:extend()
 
-Ball.radius = 12
+Ball.radius = 48
 Ball.restitution = 1
 Ball.linearDamping = 4
 
@@ -17,6 +17,7 @@ function Ball:new(world, x, y)
     )
     self.fixture:setUserData(self)
 	self.fixture:setRestitution(self.restitution)
+	self.body:setMass(1/3)
 	self.trail = Trail(x, y)
 end
 

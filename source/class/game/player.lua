@@ -1,5 +1,6 @@
 local flux = require 'lib.flux'
 local input = require 'input'
+local mouseManager = require 'mouse-manager'
 local Object = require 'lib.classic'
 local timer = require 'lib.timer'
 local Trail = require 'class.game.trail'
@@ -10,7 +11,7 @@ local Player = Object:extend()
 Player.dashing = false
 Player.dashTimer = nil
 
-Player.radius = 16
+Player.radius = 64
 Player.restitution = 1
 Player.movementSpeed = 7000
 Player.linearDamping = 15
@@ -29,6 +30,7 @@ function Player:new(world, x, y)
 	)
 	self.fixture:setUserData(self)
 	self.fixture:setRestitution(self.restitution)
+	self.body:setMass(1/3)
 	self.trail = Trail(x, y)
 end
 
@@ -88,7 +90,7 @@ function Player:update(dt)
 	self.body:applyForce(inputX * movementSpeed, inputY * movementSpeed)
 
 	if input:pressed('dash') then
-		local targetX, targetY = love.mouse.getPosition()
+		local targetX, targetY = mouseManager:getMousePosition()
 		self:tryDash(targetX, targetY)
 	end
 

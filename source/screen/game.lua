@@ -1,11 +1,12 @@
-local Object = require 'lib.classic'
+local constant = require 'constant'
 local flux = require 'lib.flux'
-local Glow = require 'shaders.glow'
+local Object = require 'lib.classic'
 local timer = require 'lib.timer'
 
 local Arena = require 'class.game.arena'
-local Player = require 'class.game.player'
 local Ball = require 'class.game.ball'
+local Glow = require 'shaders.glow'
+local Player = require 'class.game.player'
 
 local util = require 'util'
 
@@ -22,8 +23,8 @@ function Game:enter()
 
 	self.entities = {
 		Arena(self.world),
-		Player(self.world, 150, 300),
-		Ball(self.world, 350, 300),
+		Player(self.world, 300, constant.screenHeight / 2),
+		Ball(self.world, constant.screenWidth / 2, constant.screenHeight / 2),
 	}
 
 	self.glow = Glow()
@@ -39,12 +40,16 @@ function Game:update(dt)
 	end
 end
 
-function Game:draw()
-	self.glow:beginDraw()
+function Game:render()
+	self.glow:beginRender()
 	for _, entity in ipairs(self.entities) do
 		if entity.draw then entity:draw() end
 	end
-	self.glow:endDraw()
+	self.glow:endRender()
+end
+
+function Game:draw()
+	self.glow:draw()
 end
 
 function Game:beginContact(a, b, coll)
