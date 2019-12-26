@@ -3,22 +3,33 @@ local Object = require 'lib.classic'
 
 local Glow = Object:extend()
 
-Glow.defaultIterations = 4
+Glow.defaultIterations = 8
 Glow.defaultStrength = 2
+Glow.defaultSpread = 4
 
-function Glow:new(iterations, strength)
-	self.iterations = iterations or self.defaultIterations
-	self.strength = strength or self.defaultStrength
+function Glow:initializeCanvases()
 	self.unblurredCanvas = love.graphics.newCanvas(constant.screenWidth, constant.screenHeight)
 	self.horizontalBlurCanvas = love.graphics.newCanvas(constant.screenWidth, constant.screenHeight)
 	self.bothBlurCanvas = love.graphics.newCanvas(constant.screenWidth, constant.screenHeight)
+end
+
+function Glow:initializeShaders(spread)
 	self.horizontalBlurShader = love.graphics.newShader 'shaders/blur.glsl'
 	self.horizontalBlurShader:send('textureWidth', constant.screenWidth)
 	self.horizontalBlurShader:send('textureHeight', constant.screenHeight)
+	self.horizontalBlurShader:send('spread', spread or self.defaultSpread)
 	self.verticalBlurShader = love.graphics.newShader 'shaders/blur.glsl'
 	self.verticalBlurShader:send('vertical', true)
 	self.verticalBlurShader:send('textureWidth', constant.screenWidth)
 	self.verticalBlurShader:send('textureHeight', constant.screenHeight)
+	self.verticalBlurShader:send('spread', spread or self.defaultSpread)
+end
+
+function Glow:new(iterations, strength, spread)
+	self.iterations = iterations or self.defaultIterations
+	self.strength = strength or self.defaultStrength
+	self:initializeCanvases()
+	self:initializeShaders(spread)
 end
 
 function Glow:beginRender()
