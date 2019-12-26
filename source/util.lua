@@ -8,8 +8,20 @@ function util.angle(x1, y1, x2, y2)
 	return math.atan2(y2 - y1, x2 - x1)
 end
 
+function util.lengthSquared(x, y)
+	return x * x + y * y
+end
+
 function util.length(x, y)
-	return math.sqrt(x * x + y * y)
+	return math.sqrt(util.lengthSquared(x, y))
+end
+
+function util.distanceSquared(x1, y1, x2, y2)
+	return util.lengthSquared(x2 - x1, y2 - y1)
+end
+
+function util.distance(x1, y1, x2, y2)
+	return util.length(x2 - x1, y2 - y1)
 end
 
 function util.normalize(x, y)

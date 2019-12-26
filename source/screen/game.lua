@@ -6,6 +6,7 @@ local timer = require 'lib.timer'
 local Arena = require 'class.game.arena'
 local Ball = require 'class.game.ball'
 local Glow = require 'shaders.glow'
+local Grid = require 'class.game.grid'
 local Player = require 'class.game.player'
 
 local util = require 'util'
@@ -21,11 +22,11 @@ function Game:enter()
 		util.bind(self, "postSolve")
 	)
 
-	self.entities = {
-		Arena(self.world),
-		Player(self.world, 300, constant.screenHeight / 2),
-		Ball(self.world, constant.screenWidth / 2, constant.screenHeight / 2),
-	}
+	self.entities = {}
+	table.insert(self.entities, Grid(self.entities))
+	table.insert(self.entities, Arena(self.world))
+	table.insert(self.entities, Player(self.world, 300, constant.screenHeight / 2))
+	table.insert(self.entities, Ball(self.world, constant.screenWidth / 2, constant.screenHeight / 2))
 
 	self.glow = Glow()
 end
