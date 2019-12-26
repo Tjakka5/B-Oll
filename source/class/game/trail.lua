@@ -23,8 +23,8 @@ function Trail:update(dt, x, y)
 	for i = #self.trailPoints, 2, -1 do
 		local current = self.trailPoints[i]
 		local next = self.trailPoints[i - 1]
-		current.x = util.lerp(current.x, next.x, self.lerpSpeed * dt)
-		current.y = util.lerp(current.y, next.y, self.lerpSpeed * dt)
+		current.x = util.lerp(current.x, next.x, util.clamp(self.lerpSpeed * dt, 0, 1))
+		current.y = util.lerp(current.y, next.y, util.clamp(self.lerpSpeed * dt, 0, 1))
 	end
 	self.trailPoints[1].x, self.trailPoints[1].y = x, y
 end
